@@ -34,5 +34,15 @@ jobs:
         env:
           DEPLOY_TOKEN: ${{secrets.DEPLOY_TOKEN}}
         run: "echo Your deploy stuff here ${DEPLOY_TOKEN}"
+      - name: upload coverage
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverage
+          path: coverage
+      - name: upload dist folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist
         
       
