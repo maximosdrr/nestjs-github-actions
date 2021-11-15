@@ -1,0 +1,62 @@
+name: CI
+on: 
+  pull_request:
+    types: [reopened, edited, opened]
+    branches: [dev]
+  push:
+    branches: [dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cache node_modules
+        uses: actions/cache@v1
+        with: 
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
+      - name: Run ci
+        run: npm install
+      - name: Check code format
+        run: npm run lint
+      - name: Run tests
+        run: npm run test:cov
+        env:
+          CI: true
+      - name: Build project
+        if: github.event_name == 'push' #when there is a merge or push event it will be trigged
+        run: npm run build
+      - name: Deploy to stagin
+        if: github.event_name == 'push'
+        env:
+          DEPLOY_TOKEN: ${{secrets.DEPLOY_TOKEN}}
+        run: "echo Your deploy stuff here ${DEPLOY_TOKEN}"
+      - name: upload coverage
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverage
+          path: coverage
+      - name: upload dist folder
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist
+      - name: error watchdog
+        if: failure()
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{
+          github.repository }}/issues \
+          --header 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' \
+          --header 'content-type: application/json' \
+          --data '{
+            "title": "Workflow failure detected for this commit ${{github.sha}}",
+            "body": "This issue was automatically created by github actions workflow **${{github.workflow}}**. \n \n the commit hash was _${{github.sha}}_.",
+            "assignees": ["${{github.event.pull_request.user.login}}"]
+          }'
+        
+      
