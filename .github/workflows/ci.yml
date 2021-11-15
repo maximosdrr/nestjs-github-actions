@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run npm ci
-        run: npm ci
-      - name: Check code format
-        run: npm run format:check
+      - name: Run build
+        run: npm build
+      - name: Format code
+        run: npm run format
       - name: Run tests
-        run: npm test --coverange
+        run: npm test:cov
         env:
           CI: true
