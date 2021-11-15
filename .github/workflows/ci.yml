@@ -40,6 +40,7 @@ jobs:
           name: coverage
           path: coverage
       - name: upload dist folder
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v1
         with:
           name: dist
