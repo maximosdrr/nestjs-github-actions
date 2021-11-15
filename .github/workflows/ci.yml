@@ -26,6 +26,6 @@ jobs:
         if: github.event_name == 'push'
         env:
           DEPLOY_TOKEN: ${{secrets.DEPLOY_TOKEN}}
-        run: "echo Your deploy stuff here ${{DEPLOY_TOKEN}}"
+        run: "echo Your deploy stuff here ${DEPLOY_TOKEN}"
         
       
