@@ -27,7 +27,7 @@ jobs:
         env:
           CI: true
       - name: Build project
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' #when there is a merge or push event it will be trigged
         run: npm run build
       - name: Deploy to stagin
         if: github.event_name == 'push'
