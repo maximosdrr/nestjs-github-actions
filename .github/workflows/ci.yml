@@ -46,7 +46,7 @@ jobs:
           name: dist
           path: dist
       - name: error watchdog
-        if: failure() && github.event_name == 'push'
+        if: failure()
         run: |
           curl --request POST \
           --url https://api.github.com/repos/${{
